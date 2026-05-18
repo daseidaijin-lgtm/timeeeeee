@@ -1,76 +1,81 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
-
-<title>自動再生</title>
+<title>即時アラーム</title>
 
 <style>
-
 body{
-    background:black;
-    color:white;
     font-family:sans-serif;
     text-align:center;
-    padding-top:100px;
+    background:#eef2ff;
+    padding-top:80px;
+}
+
+.box{
+    background:white;
+    width:320px;
+    margin:auto;
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 0 15px rgba(0,0,0,0.1);
 }
 
 button{
     font-size:20px;
-    padding:15px 30px;
+    padding:12px 25px;
     border:none;
     border-radius:10px;
     background:#4CAF50;
     color:white;
 }
-
 </style>
 </head>
 
 <body>
 
-<h1>🎵 音楽再生ページ</h1>
+<div class="box">
+    <h1>⏰ 即時アラーム</h1>
+    <p id="status">起動中...</p>
+    <button onclick="playAlarm()">鳴らす</button>
+</div>
 
-<p>
-iPad/Safariでは自動再生制限があるため、
-最初にボタンを押してください。
-</p>
-
-<button onclick="playMusic()">
-再生
-</button>
-
-<audio id="music" autoplay>
-    <source src="videoplayback.mp3" type="audio/mpeg">
-</audio>
+<audio id="alarmAudio" src="videoplayback.mp3" preload="auto"></audio>
 
 <script>
+const audio = document.getElementById("alarmAudio");
+const status = document.getElementById("status");
 
-const music =
-document.getElementById("music");
+function getCurrentTime(){
+    const now = new Date();
+    const h = String(now.getHours()).padStart(2,"0");
+    const m = String(now.getMinutes()).padStart(2,"0");
+    return `${h}:${m}`;
+}
 
-function playMusic(){
-
-    music.play();
-
+function playAlarm(){
+    audio.currentTime = 0;
+    audio.play()
+    .then(()=>{
+        status.textContent =
+        `🚨 ${getCurrentTime()} にアラームを鳴らしました`;
+    })
+    .catch(()=>{
+        status.textContent =
+        "自動再生がブロックされました。ボタンを押してください。";
+    });
 }
 
 window.onload = ()=>{
+    const currentTime = getCurrentTime();
 
-    music.play().catch(()=>{
+    status.textContent =
+    `⏰ ${currentTime} に自動セットしました`;
 
-        console.log(
-        "自動再生がブロックされました"
-        );
-
-    });
-
+    playAlarm();
 };
-
 </script>
 
 </body>
