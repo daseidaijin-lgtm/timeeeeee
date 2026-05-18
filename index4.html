@@ -1,81 +1,150 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0">
 
-<title>即時アラーム</title>
+<title>自動起動目覚まし</title>
 
 <style>
+
 body{
     font-family:sans-serif;
     text-align:center;
     background:#eef2ff;
-    padding-top:80px;
+    padding-top:60px;
 }
 
 .box{
     background:white;
-    width:320px;
+    width:340px;
     margin:auto;
     padding:25px;
     border-radius:20px;
     box-shadow:0 0 15px rgba(0,0,0,0.1);
 }
 
-button{
+h1{
+    color:#333;
+}
+
+#status{
     font-size:20px;
+    font-weight:bold;
+    margin-top:20px;
+}
+
+button{
+    margin-top:20px;
     padding:12px 25px;
+    font-size:18px;
     border:none;
     border-radius:10px;
     background:#4CAF50;
     color:white;
 }
+
 </style>
 </head>
 
 <body>
 
 <div class="box">
-    <h1>⏰ 即時アラーム</h1>
-    <p id="status">起動中...</p>
-    <button onclick="playAlarm()">鳴らす</button>
+
+<h1>⏰ 自動目覚まし</h1>
+
+<p id="status">
+起動中...
+</p>
+
+<button onclick="manualPlay()">
+手動再生
+</button>
+
 </div>
 
-<audio id="alarmAudio" src="videoplayback.mp3" preload="auto"></audio>
+<audio
+id="alarmAudio"
+src="videoplayback.mp3"
+preload="auto">
+</audio>
 
 <script>
-const audio = document.getElementById("alarmAudio");
-const status = document.getElementById("status");
+
+const audio =
+document.getElementById("alarmAudio");
+
+const status =
+document.getElementById("status");
+
+let alarmTime = null;
+let isSet = false;
 
 function getCurrentTime(){
+
     const now = new Date();
-    const h = String(now.getHours()).padStart(2,"0");
-    const m = String(now.getMinutes()).padStart(2,"0");
+
+    const h =
+    String(now.getHours())
+    .padStart(2,"0");
+
+    const m =
+    String(now.getMinutes())
+    .padStart(2,"0");
+
     return `${h}:${m}`;
 }
 
-function playAlarm(){
+function manualPlay(){
+
     audio.currentTime = 0;
-    audio.play()
-    .then(()=>{
-        status.textContent =
-        `🚨 ${getCurrentTime()} にアラームを鳴らしました`;
-    })
-    .catch(()=>{
-        status.textContent =
-        "自動再生がブロックされました。ボタンを押してください。";
-    });
+
+    audio.play();
+
 }
 
 window.onload = ()=>{
-    const currentTime = getCurrentTime();
+
+    alarmTime = getCurrentTime();
+
+    isSet = true;
 
     status.textContent =
-    `⏰ ${currentTime} に自動セットしました`;
+    `⏰ ${alarmTime} に自動セットしました`;
 
-    playAlarm();
 };
+
+setInterval(()=>{
+
+    if(!isSet) return;
+
+    const current =
+    getCurrentTime();
+
+    if(current === alarmTime){
+
+        audio.play()
+        .then(()=>{
+
+            status.textContent =
+            "🚨 アラーム発動！";
+
+        })
+        .catch(()=>{
+
+            status.textContent =
+            "⚠️ Safariが自動再生をブロックしました";
+
+        });
+
+        isSet = false;
+
+    }
+
+},1000);
+
 </script>
 
 </body>
