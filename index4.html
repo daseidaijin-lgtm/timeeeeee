@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
 <meta charset="UTF-8">
+
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
@@ -47,6 +49,10 @@ button{
     color:white;
 }
 
+#status{
+    font-weight:bold;
+}
+
 </style>
 </head>
 
@@ -55,6 +61,8 @@ button{
 <div class="box">
 
 <h1>⏰ 目覚まし</h1>
+
+<p>起床時間</p>
 
 <input type="time" id="alarmTime">
 
@@ -95,7 +103,9 @@ setBtn.addEventListener("click",()=>{
     alarmTime = alarmTimeInput.value;
 
     if(!alarmTime){
+
         alert("時間を設定してください");
+
         return;
     }
 
@@ -109,7 +119,11 @@ setBtn.addEventListener("click",()=>{
 stopBtn.addEventListener("click",()=>{
 
     audio.pause();
+
     audio.currentTime = 0;
+
+    status.textContent =
+    "停止しました";
 
 });
 
