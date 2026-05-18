@@ -1,150 +1,123 @@
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
-
-<title>自動起動目覚まし</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自動目覚まし</title>
 
 <style>
-
 body{
+    margin:0;
+    height:100vh;
     font-family:sans-serif;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
     text-align:center;
-    background:#eef2ff;
-    padding-top:60px;
 }
 
-.box{
-    background:white;
+.card{
     width:340px;
-    margin:auto;
-    padding:25px;
-    border-radius:20px;
-    box-shadow:0 0 15px rgba(0,0,0,0.1);
+    padding:30px;
+    border-radius:30px;
+    background:rgba(255,255,255,0.12);
+    box-shadow:0 0 30px rgba(0,0,0,0.4);
 }
 
-h1{
-    color:#333;
+.time{
+    font-size:56px;
+    font-weight:bold;
+    margin:20px 0;
 }
 
-#status{
-    font-size:20px;
+.status{
+    font-size:18px;
     font-weight:bold;
     margin-top:20px;
 }
 
 button{
-    margin-top:20px;
-    padding:12px 25px;
+    margin-top:25px;
+    padding:14px 30px;
     font-size:18px;
     border:none;
-    border-radius:10px;
-    background:#4CAF50;
+    border-radius:999px;
+    background:#ef4444;
     color:white;
 }
-
 </style>
 </head>
 
 <body>
 
-<div class="box">
+<div class="card">
+    <h1>⏰ 目覚まし</h1>
 
-<h1>⏰ 自動目覚まし</h1>
+    <p>アラーム設定時刻</p>
+    <div class="time" id="alarmTimeDisplay">--:--</div>
 
-<p id="status">
-起動中...
-</p>
+    <p id="status" class="status">起動中...</p>
 
-<button onclick="manualPlay()">
-手動再生
-</button>
-
+    <button onclick="playAlarm()">再生 / 停止</button>
 </div>
 
-<audio
-id="alarmAudio"
-src="videoplayback.mp3"
-preload="auto">
-</audio>
+<audio id="alarmAudio" src="videoplayback.mp3" preload="auto" loop></audio>
 
 <script>
-
-const audio =
-document.getElementById("alarmAudio");
-
-const status =
-document.getElementById("status");
+const audio = document.getElementById("alarmAudio");
+const alarmTimeDisplay = document.getElementById("alarmTimeDisplay");
+const statusText = document.getElementById("status");
 
 let alarmTime = null;
-let isSet = false;
+let alarmStarted = false;
 
 function getCurrentTime(){
-
     const now = new Date();
-
-    const h =
-    String(now.getHours())
-    .padStart(2,"0");
-
-    const m =
-    String(now.getMinutes())
-    .padStart(2,"0");
-
+    const h = String(now.getHours()).padStart(2,"0");
+    const m = String(now.getMinutes()).padStart(2,"0");
     return `${h}:${m}`;
 }
 
-function manualPlay(){
-
-    audio.currentTime = 0;
-
-    audio.play();
-
+function playAlarm(){
+    if(audio.paused){
+        audio.currentTime = 0;
+        audio.play();
+        statusText.textContent = "🚨 アラーム発動中！";
+    }else{
+        audio.pause();
+        audio.currentTime = 0;
+        statusText.textContent = "停止しました";
+    }
 }
 
-window.onload = ()=>{
+function startAlarm(){
+    if(alarmStarted) return;
 
-    alarmTime = getCurrentTime();
+    const currentTime = getCurrentTime();
 
-    isSet = true;
-
-    status.textContent =
-    `⏰ ${alarmTime} に自動セットしました`;
-
-};
-
-setInterval(()=>{
-
-    if(!isSet) return;
-
-    const current =
-    getCurrentTime();
-
-    if(current === alarmTime){
+    if(currentTime === alarmTime){
+        alarmStarted = true;
 
         audio.play()
         .then(()=>{
-
-            status.textContent =
-            "🚨 アラーム発動！";
-
+            statusText.textContent = "🚨 アラーム発動中！";
         })
         .catch(()=>{
-
-            status.textContent =
-            "⚠️ Safariが自動再生をブロックしました";
-
+            statusText.textContent = "⚠️ 自動再生が止められました。ボタンを押してください。";
         });
-
-        isSet = false;
-
     }
+}
 
-},1000);
+window.onload = ()=>{
+    alarmTime = getCurrentTime();
 
+    alarmTimeDisplay.textContent = alarmTime;
+    statusText.textContent = `${alarmTime} に自動セットしました`;
+
+    startAlarm();
+};
 </script>
 
 </body>
