@@ -7,50 +7,25 @@
 <meta name="viewport"
 content="width=device-width, initial-scale=1.0">
 
-<title>音楽目覚まし</title>
+<title>自動再生</title>
 
 <style>
 
 body{
+    background:black;
+    color:white;
     font-family:sans-serif;
     text-align:center;
-    background:#eef2ff;
-    padding-top:50px;
-}
-
-.box{
-    background:white;
-    width:320px;
-    margin:auto;
-    padding:25px;
-    border-radius:20px;
-    box-shadow:0 0 15px rgba(0,0,0,0.1);
-}
-
-input,button{
-    margin:10px;
-    padding:10px;
-    font-size:16px;
+    padding-top:100px;
 }
 
 button{
+    font-size:20px;
+    padding:15px 30px;
     border:none;
     border-radius:10px;
-    cursor:pointer;
-}
-
-#setBtn{
     background:#4CAF50;
     color:white;
-}
-
-#stopBtn{
-    background:#ff4d4d;
-    color:white;
-}
-
-#status{
-    font-weight:bold;
 }
 
 </style>
@@ -58,101 +33,43 @@ button{
 
 <body>
 
-<div class="box">
+<h1>🎵 音楽再生ページ</h1>
 
-<h1>⏰ 目覚まし</h1>
+<p>
+iPad/Safariでは自動再生制限があるため、
+最初にボタンを押してください。
+</p>
 
-<p>起床時間</p>
+<button onclick="playMusic()">
+再生
+</button>
 
-<input type="time" id="alarmTime">
-
-<br>
-
-<button id="setBtn">セット</button>
-
-<button id="stopBtn">停止</button>
-
-<p id="status">未セット</p>
-
-</div>
-
-<audio id="alarmAudio" src="videoplayback.mp3"></audio>
+<audio id="music" autoplay>
+    <source src="videoplayback.mp3" type="audio/mpeg">
+</audio>
 
 <script>
 
-const alarmTimeInput =
-document.getElementById("alarmTime");
+const music =
+document.getElementById("music");
 
-const setBtn =
-document.getElementById("setBtn");
+function playMusic(){
 
-const stopBtn =
-document.getElementById("stopBtn");
+    music.play();
 
-const status =
-document.getElementById("status");
+}
 
-const audio =
-document.getElementById("alarmAudio");
+window.onload = ()=>{
 
-let alarmTime = null;
-let isSet = false;
+    music.play().catch(()=>{
 
-setBtn.addEventListener("click",()=>{
+        console.log(
+        "自動再生がブロックされました"
+        );
 
-    alarmTime = alarmTimeInput.value;
+    });
 
-    if(!alarmTime){
-
-        alert("時間を設定してください");
-
-        return;
-    }
-
-    isSet = true;
-
-    status.textContent =
-    `⏰ ${alarmTime} にセットしました`;
-
-});
-
-stopBtn.addEventListener("click",()=>{
-
-    audio.pause();
-
-    audio.currentTime = 0;
-
-    status.textContent =
-    "停止しました";
-
-});
-
-setInterval(()=>{
-
-    if(!isSet) return;
-
-    const now = new Date();
-
-    const h =
-    String(now.getHours()).padStart(2,"0");
-
-    const m =
-    String(now.getMinutes()).padStart(2,"0");
-
-    const current = `${h}:${m}`;
-
-    if(current === alarmTime){
-
-        audio.play();
-
-        status.textContent =
-        "🚨 起床時間です！";
-
-        isSet = false;
-
-    }
-
-},1000);
+};
 
 </script>
 
